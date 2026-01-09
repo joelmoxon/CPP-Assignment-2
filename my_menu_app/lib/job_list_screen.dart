@@ -18,6 +18,13 @@ class _JobListScreenState extends State<JobListScreen> {
           style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          print('Create new job button pressed');
+        },
+        backgroundColor: Color.fromARGB(255, 0, 153, 255),
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
