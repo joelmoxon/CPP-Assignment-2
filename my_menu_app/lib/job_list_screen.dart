@@ -63,7 +63,68 @@ Color getStatusColor(String status) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('RampCheck')),
+
+      // Title bar
+      appBar: AppBar(
+        title: const Text('RampCheck'),
+
+        // Hamburger menu button
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+      ),
+
+      // Navigation draw within hamburger menu
+      drawer: Drawer(
+        child:ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Color.fromARGB(255, 0, 153, 255)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'RampCheck',
+                    style: TextStyle(
+                      color:Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Maintenance Manager',
+                    style: TextStyle(color:Colors.white70, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+
+            // Hamburger menu navigation options
+            ListTile(
+              leading: const Icon(Icons.list),
+              title: const Text('Jobs'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+
+      // Main content area: empty state when no jobs exist
       body: jobs.isEmpty
         ? const Center(
           child: Text(
