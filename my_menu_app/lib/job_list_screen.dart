@@ -8,13 +8,27 @@ class JobListScreen extends StatefulWidget {
 
 // Mock joblist for prototype
 class _JobListScreenState extends State<JobListScreen> {
-  List<Map<String, dynamic>> jobs = [
+List<Map<String, dynamic>> jobs = [
     {
-      'id':1,
+      'id': 1,
       'title': 'Replace hydraulic fluid',
       'priority': 'high',
       'status': 'open',
-      'created_at': '09-01-2026',
+      'created_at': '2026-01-08',
+    },
+    {
+      'id': 2,
+      'title': 'Inspect landing gear',
+      'priority': 'medium',
+      'status': 'in-progress',
+      'created_at': '2026-01-07',
+    },
+    {
+      'id': 3,
+      'title': 'Check tyre pressure',
+      'priority': 'low',
+      'status': 'closed',
+      'created_at': '2026-01-06',
     },
   ];
 
@@ -38,9 +52,9 @@ Color getStatusColor(String status) {
     case 'open':
       return Colors.blue;
     case 'in-progress':
-      return Colors.yellow;
+      return Colors.purple;
     case 'closed':
-      return Colors.green;
+      return Colors.grey;
     default: 
       return Colors.grey;
   }
