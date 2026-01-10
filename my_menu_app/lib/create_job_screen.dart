@@ -8,6 +8,7 @@ class CreateJobScreen extends StatefulWidget {
 }
 
 class _CreateJobScreenState extends State<CreateJobScreen> {
+  final TextEditingController _titleController = TextEditingController();
   
   @override
   Widget build(BuildContext context) {
@@ -18,10 +19,34 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
         title: const Text('Create New Job'),
       ),
 
-      // Main content area
-      body: Center(
-        child: Text('Create job form'),
+      // Main body
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+
+            // Job title text field
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(
+                labelText:'job Title',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                prefixIcon: const Icon(Icons.work),
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  // Free memory when screen closes
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
   }
 }
