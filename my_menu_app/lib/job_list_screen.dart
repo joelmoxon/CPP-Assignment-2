@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'create_job_screen.dart';
 
 class JobListScreen extends StatefulWidget {
   const JobListScreen({Key? key}) : super(key: key);
@@ -241,7 +242,10 @@ Color getStatusColor(String status) {
       // Button to create new job
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('Create new job button pressed');
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CreateJobScreen()),
+          );
         },
         backgroundColor: Color.fromARGB(255, 0, 153, 255),
         child: const Icon(Icons.add),
