@@ -22,7 +22,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
       ),
 
       // Main body
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,6 +76,27 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                   selectedPriority = value!;
                 });
               },
+            ),
+            const SizedBox(height: 30),
+
+            // Save and Cancel buttons
+            // TODO - remove temporary button statements
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+              ),
+              child: const Text('Save Job'),
+            ),
+            const SizedBox(height: 15),
+            OutlinedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+              ),
+              child: const Text('Cancel'),
             ),
           ],
         ),
