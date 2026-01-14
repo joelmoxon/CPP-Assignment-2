@@ -10,6 +10,7 @@ class CreateJobScreen extends StatefulWidget {
 class _CreateJobScreenState extends State<CreateJobScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  String selectedPriority = 'medium';
   
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,8 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                 prefixIcon: const Icon(Icons.work),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+            
             // Description text field
             TextField(
               controller: _descriptionController,
@@ -51,6 +53,29 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                 prefixIcon: const Icon(Icons.description),
                 alignLabelWithHint: true,
               ),
+            ),
+            const SizedBox(height: 20),
+
+            // Priority dropdown button
+            DropdownButtonFormField<String>(
+              value: selectedPriority,
+              decoration: InputDecoration(
+                labelText: 'Priority',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                prefixIcon: const Icon(Icons.flag),
+              ),
+              items: const [
+                DropdownMenuItem(value: 'high', child: Text('High')),
+                DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                DropdownMenuItem(value: 'low', child: Text('Low')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  selectedPriority = value!;
+                });
+              },
             ),
           ],
         ),
