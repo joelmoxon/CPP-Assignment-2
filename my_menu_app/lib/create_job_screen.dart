@@ -9,6 +9,7 @@ class CreateJobScreen extends StatefulWidget {
 
 class _CreateJobScreenState extends State<CreateJobScreen> {
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   
   @override
   Widget build(BuildContext context) {
@@ -30,11 +31,25 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
-                labelText:'job Title',
+                labelText:'Job Title',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 prefixIcon: const Icon(Icons.work),
+              ),
+            ),
+            const SizedBox(height: 30),
+            // Description text field
+            TextField(
+              controller: _descriptionController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                labelText:'Description',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                prefixIcon: const Icon(Icons.description),
+                alignLabelWithHint: true,
               ),
             ),
           ],
@@ -47,6 +62,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
   @override
   void dispose() {
     _titleController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 }
