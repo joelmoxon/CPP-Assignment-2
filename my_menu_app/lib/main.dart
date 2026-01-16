@@ -38,9 +38,4 @@ class MyApp extends StatelessWidget {
       home: const JobListScreen(),
     );
   }
-
-  Future<void> testDatabase() async {
-    final db = await DatabaseHelper.instance.database;
-    print('Databse initialised: $db');
-  }
 }

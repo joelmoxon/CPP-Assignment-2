@@ -1,21 +1,27 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'dart:io';
 
 class DatabaseHelper {
-  
+
+  // Create databse instance
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
   static Database? _database;
 
   DatabaseHelper._privateConstructor();
 
+  // Initialise databse on first use
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
     return _database!;
   }
 
+// Create SQLite datbase file 
 Future<Database> _initDatabase() async{
-  String path = join(await getDatabasesPath(),'rempcheck.db');
+  String path = join(Directory.current.path,'datafile.db');
+  print('Database saved at: $path');
+
   return await openDatabase(
     path,
     version: 1,
@@ -23,8 +29,20 @@ Future<Database> _initDatabase() async{
   );
 }
 
+  // Create database table and columns
   Future _onCreate(Database db, int version) async {
-    print('Database created'); // TODO update with table
+    await db.execute('''
+      CREATE TABLE jobs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        priority TEXT NOT NULL,
+        status TEXT NOT NULL,
+        sync_status TEXT NOT NULL DEFAULT 'pending',
+        created_at TEXT NOT NULL,
+        updated_at TEXT
+      )
+        ''');
   }
 }
 
