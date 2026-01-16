@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 import 'job_list_screen.dart';
+import 'src/DatabaseHelper.dart';
+import 'dart:io' show Platform;
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
+    if (Platform.isWindows || Platform.isLinux) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+  
+  DatabaseHelper.instance.database.then((_) {
+    print('Passed');
+  });
+
   runApp(const MyApp());
 }
 
@@ -25,5 +37,10 @@ class MyApp extends StatelessWidget {
       ),
       home: const JobListScreen(),
     );
+  }
+
+  Future<void> testDatabase() async {
+    final db = await DatabaseHelper.instance.database;
+    print('Databse initialised: $db');
   }
 }
