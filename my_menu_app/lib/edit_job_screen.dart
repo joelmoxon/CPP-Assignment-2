@@ -18,6 +18,7 @@ class _EditJobScreenState extends State<EditJobScreen> {
   late String selectedPriority;
   bool _isSaving = false;
 
+  // Fill textboxes with exisitng data
   @override
   void initState() {
     super.initState();
@@ -30,15 +31,116 @@ class _EditJobScreenState extends State<EditJobScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
+      // Title bar 
       appBar:AppBar(
         title: const Text('Edit Job'),
       ),
-      body: const Center(
-        child: Text('Edit screen'),
+
+      // Job title box 
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(
+                labelText: 'Job Title',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                prefixIcon: const Icon(Icons.work),
+                ),
+              ),
+              const SizedBox(height:20),
+
+              // Description box
+              TextField(
+                controller: _descriptionController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  prefixIcon: const Icon(Icons.description),
+                  alignLabelWithHint: true,
+                ),
+              ),
+              const SizedBox(height: 20),
+            
+            // Task priority dropdown
+            DropdownButtonFormField<String>(
+              value: selectedPriority,
+              decoration: InputDecoration(
+                labelText: 'priority',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  ),
+                  prefixIcon: const Icon(Icons.flag),
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'high', child: Text('High')),
+                  DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                  DropdownMenuItem(value: 'low', child: Text('Low')),
+                ],
+                onChanged: (value) {
+                  setState((){
+                    selectedPriority = value!;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+
+            // Job status dropdown
+            DropdownButtonFormField<String>(
+              value: selectedStatus,
+              decoration: InputDecoration(
+                labelText: 'Status',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                prefixIcon: const Icon(Icons.assignment),
+              ),
+              items: const [
+                DropdownMenuItem(value: 'open', child: Text('Open')),
+                DropdownMenuItem(value: 'in-progress', child: Text('In Progress')),
+                DropdownMenuItem(value: 'closed', child: Text('Closed')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  selectedStatus = value!;
+                });
+              },
+            ),
+            const SizedBox(height: 30),
+
+            // Save changes button
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+              ),
+              child: const Text('Save Changes')
+            ),
+            const SizedBox(height: 15),
+
+            // Cancel changes button
+            OutlinedButton(
+              onPressed: () => Navigator.pop(context),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+              ),
+              child: const Text('Cancel'),
+            ),
+          ],
+        ),
       ),
     );
   }
 
+  // Free up memory when closed
   @override
   void dispose(){
     _titleController.dispose();
