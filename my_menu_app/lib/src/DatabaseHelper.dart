@@ -44,5 +44,18 @@ Future<Database> _initDatabase() async{
       )
         ''');
   }
+
+  // Insert new job into databse
+  Future<int> insertJob(Map<String, dynamic> job) async {
+    final db = await database;
+    return await db.insert('jobs', job);
+  }
+
+  // Get all jobs from database
+  // TODO choose appropriate order for jobs 
+  Future<List<Map<String, dynamic>>> getAllJobs() async {
+    final db = await database;
+    return await db.query('jobs', orderBy: 'created_at DESC');
+  }
 }
 
