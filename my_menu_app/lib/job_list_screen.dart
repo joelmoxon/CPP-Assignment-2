@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'create_job_screen.dart';
 import 'src/DatabaseHelper.dart';  
-import 'src/job.dart';              
+import 'src/job.dart';           
+import 'edit_job_screen.dart';   
 
 class JobListScreen extends StatefulWidget {
   const JobListScreen({Key? key}) : super(key: key);
@@ -228,9 +229,17 @@ Future<void> _loadJobs() async {
                 ),
                 trailing:const Icon(Icons.chevron_right),
 
-                // Verify job selection 
-                onTap: () {
-                  print("Selected job:${job.title}");
+                // Navigate to edit screen from job selection
+                onTap: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditJobScreen(job: job),
+                    ),
+                  );
+                  if (result == true) {
+                    _loadJobs();
+                  }
                 },
               )
             );

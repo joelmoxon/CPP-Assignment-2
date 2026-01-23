@@ -57,5 +57,17 @@ Future<Database> _initDatabase() async{
     final db = await database;
     return await db.query('jobs', orderBy: 'created_at DESC');
   }
+
+  // Update exisitng jobs in database
+  Future<int> updateJob(Map<String, dynamic> job) async {
+    final db = await database;
+    return await db.update(
+      'jobs',
+      job,
+      where: 'id = ?',
+      whereArgs: [job['id']],
+    );
+  }
 }
+
 
