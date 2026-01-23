@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import 'create_job_screen.dart';
+import 'src/DatabaseHelper.dart';  
+import 'src/job.dart';              
 
 class JobListScreen extends StatefulWidget {
   const JobListScreen({Key? key}) : super(key: key);
@@ -7,31 +10,9 @@ class JobListScreen extends StatefulWidget {
   State<JobListScreen> createState() => _JobListScreenState();
 }
 
-// Mock joblist for prototype
 class _JobListScreenState extends State<JobListScreen> {
-List<Map<String, dynamic>> jobs = [
-    {
-      'id': 1,
-      'title': 'Replace hydraulic fluid',
-      'priority': 'high',
-      'status': 'open',
-      'created_at': '2026-01-08',
-    },
-    {
-      'id': 2,
-      'title': 'Inspect landing gear',
-      'priority': 'medium',
-      'status': 'in-progress',
-      'created_at': '2026-01-07',
-    },
-    {
-      'id': 3,
-      'title': 'Check tyre pressure',
-      'priority': 'low',
-      'status': 'closed',
-      'created_at': '2026-01-06',
-    },
-  ];
+List<Job> jobs = [];
+bool isLoading = true; // Track whether app is loading data from datbase
 
 // Helper method for job priority colour coding
 Color getPriorityColor(String priority) {
@@ -59,6 +40,21 @@ Color getStatusColor(String status) {
     default: 
       return Colors.grey;
   }
+}
+
+@override
+void initState() {
+  super.initState();
+  _loadJobs();
+}
+
+// Load jobs from database
+Future<void> _loadJobs() async {
+  final jobMaps = await DatabaseHelper.instance.getAllJobs();
+  setState(() {
+    jobs = jobMaps.map((map) => Job.fromMap(map)).toList();
+    isLoading = false;
+  });
 }
 
   @override
@@ -125,13 +121,15 @@ Color getStatusColor(String status) {
         ),
       ),
 
-      // Main content area: empty state when no jobs exist
-      body: jobs.isEmpty
-        ? const Center(
+      // Main content area where jobs are added
+      body: isLoading
+        ? const Center(child: CircularProgressIndicator())
+        :jobs.isEmpty
+          ? const Center(
           child: Text(
-            'No jobs found.\nTap + to create a new job',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+              'No jobs found.\nTap + to create a new job',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
         )
 
@@ -154,7 +152,7 @@ Color getStatusColor(String status) {
 
                 // Job title
                 title: Text(
-                  job['title'],
+                  job.title,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -174,15 +172,15 @@ Color getStatusColor(String status) {
                           vertical: 4
                         ),
                         decoration: BoxDecoration(
-                          color: getPriorityColor(job['priority']),
+                          color: getPriorityColor(job.priority),
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                            color: getPriorityColor(job['priority']),
+                            color: getPriorityColor(job.priority),
                             width:1,
                           ),
                         ),
                         child: Text(
-                          job['priority'].toUpperCase(),
+                          job.priority.toUpperCase(),
                           style: TextStyle(
                             color:Colors.white,
                             fontSize:11,
@@ -199,15 +197,15 @@ Color getStatusColor(String status) {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: getStatusColor(job['status']),
+                          color: getStatusColor(job.status),
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                            color: getStatusColor(job['status']),
+                            color: getStatusColor(job.status),
                             width: 1,
                           ),
                         ),
                         child: Text(
-                          job['status'].toUpperCase(),
+                          job.status.toUpperCase(),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 11,
@@ -219,7 +217,7 @@ Color getStatusColor(String status) {
 
                       // Job creation date
                       Text(
-                        job['created_at'],
+                        job.createdAt.substring(0, 10),
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
@@ -232,7 +230,7 @@ Color getStatusColor(String status) {
 
                 // Verify job selection 
                 onTap: () {
-                  print("Selected job:${job['title']}");
+                  print("Selected job:${job.title}");
                 },
               )
             );
@@ -241,11 +239,14 @@ Color getStatusColor(String status) {
 
       // Button to create new job
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const CreateJobScreen()),
           );
+          if (result == true) {
+            _loadJobs();
+          }
         },
         backgroundColor: Color.fromARGB(255, 0, 153, 255),
         child: const Icon(Icons.add),
