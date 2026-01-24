@@ -4,7 +4,7 @@ import 'src/job.dart';
 
 class EditJobScreen extends StatefulWidget {
   final Job job;
-  
+
   const EditJobScreen({Key? key, required this.job}) : super(key: key);
 
   @override
@@ -23,21 +23,73 @@ class _EditJobScreenState extends State<EditJobScreen> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.job.title);
-    _descriptionController = TextEditingController(text: widget.job.description);
+    _descriptionController = TextEditingController(
+      text: widget.job.description,
+    );
     selectedStatus = widget.job.status;
     selectedPriority = widget.job.priority;
+  }
+
+  Future<void> _saveChanges() async {
+    if (_titleController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Job title cannot be empty')),
+      );
+      return;
+    }
+    if (_descriptionController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Description cannot be empty')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final updatedJob = Job(
+        id: widget.job.id,
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        priority: selectedPriority,
+        status: selectedStatus,
+        syncStatus: 'pending',
+        createdAt: widget.job.createdAt,
+        updatedAt: DateTime.now().toIso8601String(),
+      );
+
+      await DatabaseHelper.instance.updateJob(updatedJob.toMap());
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('job updated')));
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error updating job: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Title bar
+      appBar: AppBar(title: const Text('Edit Job')),
 
-      // Title bar 
-      appBar:AppBar(
-        title: const Text('Edit Job'),
-      ),
-
-      // Job title box 
+      // Job title box
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -51,25 +103,25 @@ class _EditJobScreenState extends State<EditJobScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 prefixIcon: const Icon(Icons.work),
-                ),
               ),
-              const SizedBox(height:20),
+            ),
+            const SizedBox(height: 20),
 
-              // Description box
-              TextField(
-                controller: _descriptionController,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  prefixIcon: const Icon(Icons.description),
-                  alignLabelWithHint: true,
+            // Description box
+            TextField(
+              controller: _descriptionController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                labelText: 'Description',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
+                prefixIcon: const Icon(Icons.description),
+                alignLabelWithHint: true,
               ),
-              const SizedBox(height: 20),
-            
+            ),
+            const SizedBox(height: 20),
+
             // Task priority dropdown
             DropdownButtonFormField<String>(
               value: selectedPriority,
@@ -77,21 +129,21 @@ class _EditJobScreenState extends State<EditJobScreen> {
                 labelText: 'priority',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  ),
-                  prefixIcon: const Icon(Icons.flag),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'high', child: Text('High')),
-                  DropdownMenuItem(value: 'medium', child: Text('Medium')),
-                  DropdownMenuItem(value: 'low', child: Text('Low')),
-                ],
-                onChanged: (value) {
-                  setState((){
-                    selectedPriority = value!;
-                  });
-                },
+                prefixIcon: const Icon(Icons.flag),
               ),
-              const SizedBox(height: 20),
+              items: const [
+                DropdownMenuItem(value: 'high', child: Text('High')),
+                DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                DropdownMenuItem(value: 'low', child: Text('Low')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  selectedPriority = value!;
+                });
+              },
+            ),
+            const SizedBox(height: 20),
 
             // Job status dropdown
             DropdownButtonFormField<String>(
@@ -105,7 +157,10 @@ class _EditJobScreenState extends State<EditJobScreen> {
               ),
               items: const [
                 DropdownMenuItem(value: 'open', child: Text('Open')),
-                DropdownMenuItem(value: 'in-progress', child: Text('In Progress')),
+                DropdownMenuItem(
+                  value: 'in-progress',
+                  child: Text('In Progress'),
+                ),
                 DropdownMenuItem(value: 'closed', child: Text('Closed')),
               ],
               onChanged: (value) {
@@ -118,17 +173,23 @@ class _EditJobScreenState extends State<EditJobScreen> {
 
             // Save changes button
             ElevatedButton(
-              onPressed: () {},
+              onPressed: _isSaving ? null : _saveChanges,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 15),
               ),
-              child: const Text('Save Changes')
+              child: _isSaving
+                  ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Save Changes'),
             ),
             const SizedBox(height: 15),
 
-            // Cancel changes button
+            // Cancel button
             OutlinedButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: _isSaving ? null : () => Navigator.pop(context),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 15),
               ),
@@ -142,9 +203,9 @@ class _EditJobScreenState extends State<EditJobScreen> {
 
   // Free up memory when closed
   @override
-  void dispose(){
+  void dispose() {
     _titleController.dispose();
-  _descriptionController.dispose();
-  super.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 }
