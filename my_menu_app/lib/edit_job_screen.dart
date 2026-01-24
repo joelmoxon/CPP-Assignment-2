@@ -30,6 +30,7 @@ class _EditJobScreenState extends State<EditJobScreen> {
     selectedPriority = widget.job.priority;
   }
 
+  // Validate changes when saving
   Future<void> _saveChanges() async {
     if (_titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -44,6 +45,7 @@ class _EditJobScreenState extends State<EditJobScreen> {
       return;
     }
 
+    // Save changes method
     setState(() {
       _isSaving = true;
     });
@@ -83,18 +85,62 @@ class _EditJobScreenState extends State<EditJobScreen> {
     }
   }
 
+  // Delete confirmation functionality
+  Future<void> _deleteJob() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Job'),
+        content: const Text('Are you sure you want to delete this job'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+         ),
+      ],
+    ),
+  );
+
+  if (confirmed == true) {
+    try {
+      await DatabaseHelper.instance.deleteJob(widget.job.id!);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('job deleted')),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting job: $e')),
+        );
+      }
+    }
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // Title bar
       appBar: AppBar(title: const Text('Edit Job')),
 
-      // Job title box
+  
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+
+            // Job title box
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
@@ -194,6 +240,18 @@ class _EditJobScreenState extends State<EditJobScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 15),
               ),
               child: const Text('Cancel'),
+            ),
+            const SizedBox(height: 15),  
+
+            // Delete button
+            OutlinedButton.icon(
+            onPressed: _deleteJob,
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              foregroundColor: Colors.red,
+            ),
+            icon: const Icon(Icons.delete),
+            label: const Text('Delete Job'),
             ),
           ],
         ),

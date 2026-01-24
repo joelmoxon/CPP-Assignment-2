@@ -68,6 +68,16 @@ Future<Database> _initDatabase() async{
       whereArgs: [job['id']],
     );
   }
+
+  // Delete job from database
+  Future<int> deleteJob(int id) async {
+    final db = await database;
+    return await db.delete(
+      'jobs',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }
 
 
