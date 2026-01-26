@@ -3,7 +3,6 @@ import 'package:path/path.dart';
 import 'dart:io';
 
 class DatabaseHelper {
-
   // Create databse instance
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
   static Database? _database;
@@ -17,17 +16,13 @@ class DatabaseHelper {
     return _database!;
   }
 
-// Create SQLite datbase file 
-Future<Database> _initDatabase() async{
-  String path = join(Directory.current.path,'datafile.db');
-  print('Database saved at: $path');
+  // Create SQLite datbase file
+  Future<Database> _initDatabase() async {
+    String path = join(Directory.current.path, 'datafile.db');
+    print('Database saved at: $path');
 
-  return await openDatabase(
-    path,
-    version: 1,
-    onCreate: _onCreate,
-  );
-}
+    return await openDatabase(path, version: 1, onCreate: _onCreate);
+  }
 
   // Create database table and columns
   Future _onCreate(Database db, int version) async {
@@ -52,7 +47,7 @@ Future<Database> _initDatabase() async{
   }
 
   // Get all jobs from database
-  // TODO choose appropriate order for jobs 
+  // TODO choose appropriate order for jobs
   Future<List<Map<String, dynamic>>> getAllJobs() async {
     final db = await database;
     return await db.query('jobs', orderBy: 'created_at DESC');
@@ -72,12 +67,27 @@ Future<Database> _initDatabase() async{
   // Delete job from database
   Future<int> deleteJob(int id) async {
     final db = await database;
-    return await db.delete(
+    return await db.delete('jobs', where: 'id = ?', whereArgs: [id]);
+  }
+
+  // Get all jobs that need synching
+  Future<List<Map<String, dynamic>>> getPendingJobs() async {
+    final db = await database;
+    return await db.query(
       'jobs',
+      where: 'sync_status = ?',
+      whereArgs: ['pending'],
+    );
+  }
+
+  // Mark jobs as synced
+  Future<int> markJobAsSynced(int id) async {
+    final db = await database;
+    return await db.update(
+      'jobs',
+      {'sync_status': 'synced'},
       where: 'id = ?',
       whereArgs: [id],
     );
   }
 }
-
-
