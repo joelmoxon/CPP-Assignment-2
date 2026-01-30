@@ -18,7 +18,8 @@ class DatabaseHelper {
 
   // Create SQLite datbase file
   Future<Database> _initDatabase() async {
-    String path = join(Directory.current.path, 'datafile.db');
+  String databasesPath = await getDatabasesPath();
+  String path = join(databasesPath, 'datafile.db');
     print('Database saved at: $path');
 
     return await openDatabase(path, version: 1, onCreate: _onCreate);

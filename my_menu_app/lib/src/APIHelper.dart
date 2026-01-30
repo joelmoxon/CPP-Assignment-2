@@ -31,7 +31,7 @@ class ApiHelper {
         'description': description,
         'priority': priority,
         'status': status,
-        'user_id': null, // TODO consider devloping this feature
+        'user_id': "1", 
       }),
     );
     return jsonDecode(response.body) as Map<String, dynamic>;

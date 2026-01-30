@@ -4,15 +4,16 @@ import 'src/DatabaseHelper.dart';
 import 'dart:io' show Platform;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
-    if (Platform.isWindows || Platform.isLinux) {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  if (Platform.isWindows || Platform.isLinux) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
   
-  DatabaseHelper.instance.database.then((_) {
-    print('Passed');
-  });
+  await DatabaseHelper.instance.database;
+  print('Database initialized');
 
   runApp(const MyApp());
 }
