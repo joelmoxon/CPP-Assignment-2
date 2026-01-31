@@ -20,7 +20,6 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
   String databasesPath = await getDatabasesPath();
   String path = join(databasesPath, 'datafile.db');
-    print('Database saved at: $path');
 
     return await openDatabase(path, version: 1, onCreate: _onCreate);
   }
