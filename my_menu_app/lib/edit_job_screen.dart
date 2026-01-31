@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'src/DatabaseHelper.dart';
+import 'src/database_helper.dart';
 import 'src/job.dart';
 
 class EditJobScreen extends StatefulWidget {

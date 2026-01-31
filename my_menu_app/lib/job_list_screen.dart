@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'create_job_screen.dart';
-import 'src/DatabaseHelper.dart';
+import 'src/database_helper.dart';
 import 'src/job.dart';
 import 'edit_job_screen.dart';
-import 'src/APIHelper.dart';
+import 'src/api_helper.dart';
 
 class JobListScreen extends StatefulWidget {
   const JobListScreen({Key? key}) : super(key: key);
@@ -62,6 +62,11 @@ class _JobListScreenState extends State<JobListScreen> {
 
   // Online sync
   Future<void> _syncJobs() async {
+
+    // Sync test start time
+    var startTime = DateTime.now();
+    print('Sync started at: $startTime');
+
     setState(() {
       isSyncing = true;
     });
@@ -83,6 +88,12 @@ class _JobListScreenState extends State<JobListScreen> {
 
         await DatabaseHelper.instance.markJobAsSynced(job.id!);
       }
+
+      // Sync test end time
+      var endTime = DateTime.now();
+      var duration = endTime.difference(startTime);
+      print('Sync completed at: $endTime');
+      print('Total sync time: ${duration.inMilliseconds}ms');
 
       if (mounted) {
         _loadJobs();
@@ -108,6 +119,7 @@ class _JobListScreenState extends State<JobListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       // Title bar
       appBar: AppBar(
         title: const Text('RampCheck'),
@@ -181,6 +193,7 @@ class _JobListScreenState extends State<JobListScreen> {
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             )
+            
           // Create scrollable job list
           : ListView.builder(
               padding: const EdgeInsets.all(8),

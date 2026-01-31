@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'src/DatabaseHelper.dart';
+import 'src/database_helper.dart';
 import 'src/job.dart';
 
 class CreateJobScreen extends StatefulWidget {
@@ -48,10 +48,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
       );
 
       // Save to database
-      // TODO remove print statement
       final jobId = await DatabaseHelper.instance.insertJob(job.toMap());
-      print('job: $jobId saved succesfully');
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Job $jobId created succesfully')),
@@ -138,7 +135,6 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
             const SizedBox(height: 30),
 
             // Save button
-            // TODO - remove temporary button statements
             ElevatedButton(
               onPressed: _isSaving ? null : _saveJob,
               style: ElevatedButton.styleFrom(

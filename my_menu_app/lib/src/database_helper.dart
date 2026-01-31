@@ -48,7 +48,6 @@ class DatabaseHelper {
   }
 
   // Get all jobs from database
-  // TODO choose appropriate order for jobs
   Future<List<Map<String, dynamic>>> getAllJobs() async {
     final db = await database;
     return await db.query('jobs', orderBy: 'created_at DESC');
